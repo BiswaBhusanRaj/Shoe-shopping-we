@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ShopEase — Bootstrap Shopping Site</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+      --brand: #0d6efd;
+    }
+    body { background: #f8f9fa; }
+    .navbar-brand span { color: var(--brand); }
+    .hero {
+      background: linear-gradient(135deg, #eff6ff, #f8f9ff);
+      border-bottom: 1px solid #e9ecef;
+    }
+    .category-chip.active { background: var(--brand); color: #fff; }
+    .card { transition: transform .15s ease, box-shadow .15s ease; }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 0.5rem 1rem rgba(0,0,0,.08); }
+    .price { font-weight: 700; }
+    .badge-discount { position: absolute; top: .75rem; left: .75rem; }
+    footer { border-top: 1px solid #e9ecef; }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg bg-white sticky-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#"><i class="bi bi-bag-check-fill me-2 text-primary"></i>Shop<span>Ease</span></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link active" href="#">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="#shop">Shop</a></li>
+          <li class="nav-item"><a class="nav-link" href="#categories">Categories</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+        </ul>
+        <form class="d-flex gap-2" role="search" onsubmit="event.preventDefault(); applySearch();">
+          <input id="searchInput" class="form-control" type="search" placeholder="Search products..." aria-label="Search">
+          <button class="btn btn-outline-primary" type="submit"><i class="bi bi-search"></i></button>
+          <button class="btn btn-primary position-relative" type="button" data-bs-toggle="offcanvas" data-bs-target="#cartCanvas" aria-controls="cartCanvas">
+            <i class="bi bi-cart"></i>
+            <span id="cartCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero py-5">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-6">
+          <h1 class="display-5 fw-bold">Discover deals you’ll love</h1>
+          <p class="lead text-secondary">Quality products, fast delivery, and secure checkout — all powered by Bootstrap 5.</p>
+          <div class="d-flex gap-2">
+            <a href="#shop" class="btn btn-primary btn-lg"><i class="bi bi-bag"></i> Start Shopping</a>
+            <a href="#categories" class="btn btn-outline-primary btn-lg"><i class="bi bi-grid"></i> Browse Categories</a>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <img class="img-fluid rounded-4 shadow-sm" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1600&auto=format&fit=crop" alt="Shopping banner">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATEGORIES -->
+  <section id="categories" class="py-4">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="h4 m-0">Categories</h2>
+        <button class="btn btn-sm btn-outline-secondary" onclick="clearFilters()"><i class="bi bi-x-circle"></i> Clear</button>
+      </div>
+      <div id="categoryRow" class="d-flex flex-wrap gap-2">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- SHOP -->
+  <section id="shop" class="py-4">
+    <div class="container">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="h4 m-0">Featured Products</h2>
+        <div class="d-flex align-items-center gap-2">
+          <label for="sortSelect" class="text-secondary">Sort:</label>
+          <select id="sortSelect" class="form-select form-select-sm w-auto" onchange="applySort()">
+            <option value="popular">Most Popular</option>
+            <option value="priceAsc">Price: Low to High</option>
+            <option value="priceDesc">Price: High to Low</option>
+            <option value="name">Name A–Z</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="productGrid" class="row g-3">
+        <!-- Product cards injected here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT / FOOTER -->
+  <footer id="contact" class="bg-white py-5 mt-4">
+    <div class="container">
+      <div class="row g-4">
+        <div class="col-md-4">
+          <h5>ShopEase</h5>
+          <p class="text-secondary small">A demo e‑commerce site built with Bootstrap 5. Customize products, categories and logic to fit your needs.</p>
+        </div>
+        <div class="col-md-4">
+          <h6>Support</h6>
+          <ul class="list-unstyled small">
+            <li><i class="bi bi-shield-lock"></i> Secure Payments</li>
+            <li><i class="bi bi-truck"></i> Fast Delivery</li>
+            <li><i class="bi bi-arrow-repeat"></i> Easy Returns</li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h6>Newsletter</h6>
+          <form class="d-flex gap-2" onsubmit="event.preventDefault(); alert('Subscribed!');">
+            <input type="email" class="form-control" placeholder="Enter email" required>
+            <button class="btn btn-primary" type="submit">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      <div class="text-center text-secondary small mt-4">© <span id="year"></span> ShopEase. Built with Bootstrap.</div>
+    </div>
+  </footer>
+
+  <!-- PRODUCT DETAILS MODAL -->
+  <div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="productModalLabel">Product</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-4 align-items-start">
+            <div class="col-md-5">
+              <img id="modalImg" class="img-fluid rounded" alt="Product image" />
+            </div>
+            <div class="col-md-7">
+              <h3 id="modalTitle" class="h4"></h3>
+              <p id="modalDesc" class="text-secondary"></p>
+              <div class="d-flex align-items-baseline gap-3 mb-3">
+                <span id="modalPrice" class="price h4 text-primary"></span>
+                <del id="modalMRP" class="text-secondary"></del>
+                <span id="modalDiscount" class="badge bg-success"></span>
+              </div>
+              <div class="d-flex gap-2">
+                <button id="modalAddBtn" class="btn btn-primary"><i class="bi bi-cart-plus"></i> Add to Cart</button>
+                <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CART OFFCANVAS -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="cartCanvas" aria-labelledby="cartCanvasLabel">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title" id="cartCanvasLabel"><i class="bi bi-cart"></i> Your Cart</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column">
+      <ul id="cartList" class="list-group list-group-flush mb-3">
+        <!-- Items injected here -->
+      </ul>
+      <div class="mt-auto">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="fw-semibold">Subtotal</span>
+          <span id="cartSubtotal" class="fw-bold"></span>
+        </div>
+        <button class="btn btn-primary w-100" onclick="checkout()"><i class="bi bi-bag-check"></i> Checkout</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- Demo Data ---
+    const PRODUCTS = [
+      {id:1, title:'Wireless Headphones', price:1999, mrp:2999, category:'Electronics', img:'https://images.unsplash.com/photo-1518441902113-c1d3b2d3d1a5?q=80&w=1200&auto=format&fit=crop', desc:'Comfortable over‑ear design with crisp sound and long battery life.'},
+      {id:2, title:'Smart Watch', price:3499, mrp:4999, category:'Electronics', img:'https://images.unsplash.com/photo-1517411032315-54ef2cb783bb?q=80&w=1200&auto=format&fit=crop', desc:'Track fitness, get notifications, and stay connected on the go.'},
+      {id:3, title:'Cotton T‑Shirt', price:499, mrp:799, category:'Fashion', img:'https://images.unsplash.com/photo-1520975916090-3105956dac38?q=80&w=1200&auto=format&fit=crop', desc:'Soft, breathable cotton. Perfect for everyday wear.'},
+      {id:4, title:'Running Sneakers', price:2599, mrp:3499, category:'Fashion', img:'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?q=80&w=1200&auto=format&fit=crop', desc:'Lightweight design with great cushioning for daily runs.'},
+      {id:5, title:'Ceramic Mug', price:299, mrp:499, category:'Home', img:'https://images.unsplash.com/photo-1518977676601-b53f82aba655?q=80&w=1200&auto=format&fit=crop', desc:'Minimal mug for your morning coffee or evening tea.'},
+      {id:6, title:'Table Lamp', price:1299, mrp:1799, category:'Home', img:'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?q=80&w=1200&auto=format&fit=crop', desc:'Warm ambient light with adjustable neck for focused tasks.'},
+      {id:7, title:'Backpack', price:1499, mrp:2199, category:'Accessories', img:'https://images.unsplash.com/photo-1514477917009-389c76a86b68?q=80&w=1200&auto=format&fit=crop', desc:'Spacious, durable, and water‑resistant. Ideal for daily commute.'},
+      {id:8, title:'Sunglasses', price:899, mrp:1299, category:'Accessories', img:'https://images.unsplash.com/photo-1465406325902-5515553b0f81?q=80&w=1200&auto=format&fit=crop', desc:'UV protection with stylish frame — summer essential.'},
+    ];
+
+    const CATEGORIES = ['All','Electronics','Fashion','Home','Accessories'];
+
+    const state = {
+      search: '',
+      category: 'All',
+      sort: 'popular',
+      cart: new Map(), // id -> qty
+    };
+
+    const formatINR = (n) => new Intl.NumberFormat('en-IN', { style:'currency', currency:'INR', maximumFractionDigits:0 }).format(n);
+
+    // --- Rendering ---
+    function renderCategories() {
+      const row = document.getElementById('categoryRow');
+      row.innerHTML = '';
+      CATEGORIES.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-sm btn-outline-secondary category-chip';
+        if (state.category === cat) btn.classList.add('active');
+        btn.textContent = cat;
+        btn.onclick = () => { state.category = cat; renderProducts(); highlightCategories(); };
+        row.appendChild(btn);
+      });
+    }
+
+    function highlightCategories(){
+      document.querySelectorAll('.category-chip').forEach(b=>{
+        b.classList.toggle('active', b.textContent === state.category);
+      });
+    }
+
+    function productCard(p){
+      const discount = Math.round((1 - p.price / p.mrp) * 100);
+      return `
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="card h-100">
+            <span class="badge bg-danger badge-discount">-${discount}%</span>
+            <img src="${p.img}" class="card-img-top" alt="${p.title}">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">${p.title}</h5>
+              <p class="card-text small text-secondary">${p.desc}</p>
+              <div class="mt-auto d-flex align-items-baseline gap-2">
+                <span class="price text-primary">${formatINR(p.price)}</span>
+                <del class="text-secondary small">${formatINR(p.mrp)}</del>
+              </div>
+            </div>
+            <div class="card-footer bg-white border-0 d-flex gap-2">
+              <button class="btn btn-primary w-100" onclick="addToCart(${p.id})"><i class="bi bi-cart-plus"></i> Add</button>
+              <button class="btn btn-outline-secondary" onclick="openProduct(${p.id})"><i class="bi bi-eye"></i></button>
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function applySearch(){
+      state.search = document.getElementById('searchInput').value.trim().toLowerCase();
+      renderProducts();
+    }
+
+    function applySort(){
+      state.sort = document.getElementById('sortSelect').value;
+      renderProducts();
+    }
+
+    function clearFilters(){
+      state.search = '';
+      document.getElementById('searchInput').value = '';
+      state.category = 'All';
+      highlightCategories();
+      renderProducts();
+    }
+
+    function filteredProducts(){
+      let list = PRODUCTS.filter(p =>
+        (state.category === 'All' || p.category === state.category) &&
+        (state.search === '' || p.title.toLowerCase().includes(state.search) || p.desc.toLowerCase().includes(state.search))
+      );
+      switch (state.sort){
+        case 'priceAsc': list.sort((a,b)=>a.price-b.price); break;
+        case 'priceDesc': list.sort((a,b)=>b.price-a.price); break;
+        case 'name': list.sort((a,b)=>a.title.localeCompare(b.title)); break;
+        default: /* popular */ break;
+      }
+      return list;
+    }
+
+    function renderProducts(){
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = filteredProducts().map(productCard).join('');
+    }
+
+    // --- Product Modal ---
+    function openProduct(id){
+      const p = PRODUCTS.find(x=>x.id===id);
+      if(!p) return;
+      document.getElementById('modalImg').src = p.img;
+      document.getElementById('modalTitle').textContent = p.title;
+      document.getElementById('modalDesc').textContent = p.desc;
+      document.getElementById('modalPrice').textContent = formatINR(p.price);
+      document.getElementById('modalMRP').textContent = formatINR(p.mrp);
+      const discount = Math.round((1 - p.price / p.mrp) * 100);
+      document.getElementById('modalDiscount').textContent = `-${discount}%`;
+      const btn = document.getElementById('modalAddBtn');
+      btn.onclick = () => addToCart(id);
+      const modal = new bootstrap.Modal(document.getElementById('productModal'));
+      modal.show();
+    }
+
+    // --- Cart Logic ---
+    function addToCart(id){
+      state.cart.set(id, (state.cart.get(id) || 0) + 1);
+      updateCartUI();
+      // small toast
+      showToast('Added to cart');
+    }
+
+    function removeFromCart(id){
+      state.cart.delete(id);
+      updateCartUI();
+    }
+
+    function changeQty(id, delta){
+      const q = (state.cart.get(id) || 1) + delta;
+      if (q <= 0) state.cart.delete(id); else state.cart.set(id, q);
+      updateCartUI();
+    }
+
+    function cartItems(){
+      return Array.from(state.cart.entries()).map(([id, qty])=>({ product: PRODUCTS.find(p=>p.id===id), qty }));
+    }
+
+    function updateCartUI(){
+      const list = document.getElementById('cartList');
+      const items = cartItems();
+      if(items.length === 0){
+        list.innerHTML = '<li class="list-group-item text-center text-secondary">Your cart is empty</li>';
+      } else {
+        list.innerHTML = items.map(({product:p, qty})=>`
+          <li class="list-group-item d-flex align-items-center justify-content-between gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <img src="${p.img}" class="rounded" alt="${p.title}" width="48" height="48" style="object-fit:cover">
+              <div>
+                <div class="small fw-semibold">${p.title}</div>
+                <div class="small text-secondary">${formatINR(p.price)} × ${qty}</div>
+              </div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <button class="btn btn-sm btn-outline-secondary" onclick="changeQty(${p.id}, -1)"><i class="bi bi-dash"></i></button>
+              <span class="mx-1">${qty}</span>
+              <button class="btn btn-sm btn-outline-secondary" onclick="changeQty(${p.id}, 1)"><i class="bi bi-plus"></i></button>
+              <button class="btn btn-sm btn-outline-danger" onclick="removeFromCart(${p.id})"><i class="bi bi-trash"></i></button>
+            </div>
+          </li>`).join('');
+      }
+      const subtotal = items.reduce((sum, {product, qty}) => sum + product.price * qty, 0);
+      document.getElementById('cartSubtotal').textContent = formatINR(subtotal);
+      document.getElementById('cartCount').textContent = items.reduce((a,b)=>a+b.qty,0);
+    }
+
+    function checkout(){
+      if (state.cart.size === 0) return alert('Your cart is empty.');
+      alert('This is a demo. Implement payment gateway here.');
+    }
+
+    function showToast(msg){
+      const el = document.createElement('div');
+      el.className = 'position-fixed bottom-0 start-50 translate-middle-x mb-3 p-2 px-3 bg-dark text-white rounded shadow';
+      el.style.zIndex = 1080;
+      el.textContent = msg;
+      document.body.appendChild(el);
+      setTimeout(()=> el.remove(), 1400);
+    }
+
+    // --- Init ---
+    document.getElementById('year').textContent = new Date().getFullYear();
+    renderCategories();
+    renderProducts();
+    updateCartUI();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
